@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: portfolio-backend
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+  servlet:
+    session:
+      timeout: 15m
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${SESSION_COOKIE_SECURE:false}
+
+ai:
+  enabled: ${AI_CHAT_ENABLED:false}
+  free-tier-confirmed: ${GEMINI_FREE_TIER_CONFIRMED:false}
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
+  daily-limit: ${AI_DAILY_LIMIT:50}
+  free-rpd: ${GEMINI_FREE_RPD:500}
+  free-rpm: ${GEMINI_FREE_RPM:15}
+  free-tpm: ${GEMINI_FREE_TPM:250000}
+  free-tier:
+    confirmed-model: ${GEMINI_FREE_TIER_MODEL:gemini-3.5-flash-lite}
+    # Application allowlist/ceilings, NOT a verified Google entitlement for deployments.
+    # Operators must verify their own project before enabling either switch.
+    models:
+      "[gemini-3.5-flash-lite]":
+        confirmed: true
+        rpm: 15
+        rpd: 500
+        tpm: 250000
+
+logging:
+  level:
+    com.portfolio.backend.chat: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: "OFF"
+  pattern:
+    level: "%5p [chatTraceId=%X{chatTraceId:-}]"
+
+---
+# DB auto-configuration is disabled outside database-backed profiles.
+spring:
+  config:
+    activate:
+      on-profile: "!local & !production & !prod"
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
+      - org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration
+
+

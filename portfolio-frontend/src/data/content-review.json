@@ -1,0 +1,14 @@
+[
+  {
+    "id": "site-description",
+    "page": "/",
+    "project": "Public source edition",
+    "projectId": "developer-portfolio",
+    "field": "stack",
+    "file": "src/data/projects.ts",
+    "status": "resolved",
+    "required": false,
+    "reason": "Synthetic fixtures and repository-owned source only.",
+    "resolution": "Company source material excluded from this edition."
+  }
+]

@@ -1,0 +1,5 @@
+.content-review { color: #991b1b; overflow-wrap: anywhere; }
+.content-review-badge { display: inline-block; position: relative; vertical-align: middle; margin-inline: .25em; padding: 2px 5px; border: 1px solid #b91c1c; border-radius: 3px; color: #991b1b; background: #fff1f2; font: 600 10px/1.5 sans-serif; letter-spacing: 0; white-space: nowrap; cursor: help; }
+.content-review-tooltip { display: none; position: absolute; z-index: 20; left: 0; bottom: 100%; width: max-content; max-width: min(240px, 65vw); padding: 8px; color: #fff; background: #7f1d1d; white-space: normal; font-weight: 400; }
+.content-review-badge:hover .content-review-tooltip, .content-review-badge:focus .content-review-tooltip { display: block; }
+.content-review-site { margin: 12px auto; width: min(90%, 1200px); color: #991b1b; font-size: 12px; }

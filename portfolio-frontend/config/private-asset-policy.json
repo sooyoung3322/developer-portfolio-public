@@ -1,0 +1,7 @@
+{
+  "blockedNames": ["portfolio.env", "backup.cnf", "github-token", "deploy.json", "id_rsa", "id_ed25519", "credentials"],
+  "blockedSuffixes": [".docx", ".doc", ".pem", ".key", ".p12", ".pfx", ".jks", ".keystore", ".sql", ".dump", ".bak", ".backup", ".log", ".zip", ".gz", ".tgz", ".7z", ".tar"],
+  "blockedPrefixes": [".env", "application-local."],
+  "blockedContentPrefixesHex": ["504b0304", "504b0506", "504b0708", "1f8b"],
+  "blockedTextMarkers": ["-----BEGIN PRIVATE KEY-----", "-----BEGIN RSA PRIVATE KEY-----", "-----BEGIN EC PRIVATE KEY-----", "-----BEGIN OPENSSH PRIVATE KEY-----", "-----BEGIN ENCRYPTED PRIVATE KEY-----"]
+}

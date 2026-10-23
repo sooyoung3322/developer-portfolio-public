@@ -1,0 +1,40 @@
+# Synthetic profile fixture for security tests; never a server configuration.
+spring:
+  datasource:
+    url: jdbc:h2:mem:profilefixture;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ''
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 4
+      minimum-idle: 1
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    clean-disabled: true
+server:
+  address: 127.0.0.1
+  error:
+    include-message: never
+    include-stacktrace: never
+  servlet:
+    session:
+      cookie:
+        secure: true
+ai:
+  enabled: ${AI_CHAT_ENABLED:false}
+  free-tier-confirmed: ${GEMINI_FREE_TIER_CONFIRMED:false}
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:}
+  daily-limit: ${AI_DAILY_LIMIT:0}
+  free-rpd: ${GEMINI_FREE_RPD:0}
+  free-rpm: ${GEMINI_FREE_RPM:0}
+  free-tpm: ${GEMINI_FREE_TPM:0}
+  free-tier:
+    confirmed-model: ${GEMINI_FREE_TIER_MODEL:}
+analytics:
+  enabled: true
+  allowed-origin: ${APP_ORIGIN:http://localhost:5173}

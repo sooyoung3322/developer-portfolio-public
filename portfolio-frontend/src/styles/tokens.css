@@ -1,0 +1,22 @@
+/* All design tokens live here; Tailwind utilities share the same theme. */
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-ink: #252727;
+  --color-muted: #6b6d72;
+  --color-blue: #173f83;
+  --color-line: #deded8;
+  --color-soft: #eeede7;
+  --color-placeholder-border: #bcbeb9;
+  --color-thumbnail: #e8e6df;
+  --font-sans: "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-editorial: Georgia, "Times New Roman", serif;
+  --spacing-page: clamp(24px, 6vw, 96px);
+  --spacing-section: clamp(64px, 9vw, 128px);
+  --radius-card: 2px;
+  --text-display: clamp(54px, 7.5vw, 112px);
+}
+
+:root { --content-width: 1280px; --transition-ui: 180ms ease; }
