@@ -11,7 +11,7 @@ public class KnowledgeService implements KnowledgeContextSource {
  @Override @Transactional(readOnly=true)
  public List<Knowledge> search(String question) {
   // Do not silently omit long records or require exact question keywords.
-  return repository.findByPublishedTrueOrderById().stream()
+  return java.util.stream.Stream.concat(repository.findByPublishedTrueOrderById().stream(), java.util.stream.Stream.of(Knowledge.publicContact()))
    .filter(k->!privacy.sensitive(k.getContent()) && !privacy.injection(k.getContent()))
    .filter(k->!privacy.sensitive(k.getTitle()) && !privacy.injection(k.getTitle())).toList();
  }

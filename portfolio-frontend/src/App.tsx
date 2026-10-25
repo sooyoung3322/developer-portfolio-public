@@ -4,7 +4,7 @@ import { PortfolioChat } from './components/PortfolioChat'
 import { SiteContentReview } from './components/ContentReview'
 import { createPortal } from 'react-dom'
 import { SiteTechnologyModal } from './components/SiteTechnologyModal'
-import { AnalyticsTracking, trackMarkdownDownload } from './analytics'
+import { AnalyticsTracking } from './analytics'
 import { BackToTop } from './components/BackToTop'
 import { ProjectProgress } from './components/ProjectProgress'
 import { ScrollMotion } from './components/ScrollMotion'
@@ -14,7 +14,8 @@ import { Link, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import { Arrow, ProjectCard, ProjectVisual, SectionHeading, StackTags } from './components/ui'
 import { projects, type ProjectImage } from './data/projects'
 import { experiences, profile, skills } from './data/profile'
-import { downloadPortfolioMarkdown } from './portfolioMarkdown'
+import { MarkdownDownloadButton } from './components/MarkdownDownloadButton'
+import { ContactEmail } from './components/ContactEmail'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -91,7 +92,7 @@ function Header() {
       }}
       onBlur={event => {
         if (!header.current?.contains(event.relatedTarget)) setMenuOpen(false)
-      }}><Link to="/#about" {...menuProps('about')}>About</Link><Link to="/#experience" {...menuProps('experience')}>Experience</Link><Link to="/#work" {...menuProps('work')}>Projects</Link><Link to="/#skills" {...menuProps('skills')}>Skills</Link><Link to="/#contact" {...menuProps('contact')}>Contact</Link><ChatButton className="header-chat-link">AI 질문</ChatButton><GitHubLink href={profile.github} label="sooyoung3322 GitHub 프로필" iconOnly/></nav></header>
+      }}><Link to="/#about" {...menuProps('about')}>About</Link><Link to="/#experience" {...menuProps('experience')}>Experience</Link><Link to="/#work" {...menuProps('work')}>Projects</Link><Link to="/#skills" {...menuProps('skills')}>Skills</Link><Link to="/#contact" {...menuProps('contact')}>Contact</Link><ChatButton className="header-chat-link">AI 질문</ChatButton><GitHubLink href={profile.github} label="sooyoung3322 GitHub 프로필" iconOnly/><MarkdownDownloadButton className="header-download" onDownloaded={() => { setMenuOpen(false); if (menuOpen) menuToggle.current?.focus({ preventScroll: true }) }}/></nav></header>
 }
 
 function Home() {
@@ -118,7 +119,7 @@ function Home() {
         {skills.map(group => <div key={group.eyebrow} className="about-copy"><p className="eyebrow">{group.eyebrow}</p><h3>{group.title}</h3><ul className="muted skills-details">{group.items.map(item => <li key={item}>{item}</li>)}</ul></div>)}
       </div>
     </section>
-    <section id="contact" className="closing container"><p className="eyebrow">CONTACT / THANK YOU FOR READING</p><p>포트폴리오를<br/><span className="serif">읽어 주셔서 감사합니다.</span></p><div className="portfolio-download"><button type="button" className="text-link" onClick={() => downloadPortfolioMarkdown(trackMarkdownDownload)}>포트폴리오 .md 다운로드 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg></button><p className="muted">경력과 프로젝트 내용을 Markdown 파일로 확인할 수 있습니다.</p></div></section>
+    <section id="contact" className="closing container"><p className="eyebrow">CONTACT / THANK YOU FOR READING</p><p>끝까지 읽어주셔서<br/><span className="serif">감사합니다.</span></p><p className="contact-description muted">프로젝트와 개발 경험에 대해 더 궁금한 점이 있다면 편하게 연락해 주세요.</p><ContactEmail/><div className="contact-actions"><MarkdownDownloadButton className="contact-download"/></div><details className="contact-analytics"><summary>방문 통계 안내</summary><p>방문·프로젝트 클릭·상세 조회·다운로드 횟수와 기기 유형을 집계합니다. 브라우저에 임의 식별자를 저장하고 서버에는 해시값을 보관해 중복 방문을 구분합니다. IP 통계가 활성화된 경우 원본 IP 대신 날짜별 HMAC 토큰을 저장하며, 30일이 지나면 삭제 대상이 됩니다. 통계 이벤트와 브라우저 식별자 해시는 별도 만료 없이 유지됩니다.</p></details></section>
   </main>
 }
 

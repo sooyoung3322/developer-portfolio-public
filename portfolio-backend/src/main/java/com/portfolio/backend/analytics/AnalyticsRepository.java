@@ -7,6 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface AnalyticsRepository extends JpaRepository<AnalyticsEvent, Long> {
+    List<AnalyticsEvent> findTop500ByIpExpiresAtLessThanEqualOrderByIpExpiresAtAsc(java.time.Instant cutoff);
+
+    @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true)
+    @Query("update AnalyticsEvent e set e.ipToken = null, e.ipExpiresAt = null where e in :expired")
+    int clearIp(@Param("expired") List<AnalyticsEvent> expired);
+
+    default int clearExpiredIp(java.time.Instant cutoff) {
+        var expired = findTop500ByIpExpiresAtLessThanEqualOrderByIpExpiresAtAsc(cutoff);
+        return expired.isEmpty() ? 0 : clearIp(expired);
+    }
     long countByScope(String scope);
     long countByScopeAndVisitDate(String scope, LocalDate visitDate);
 

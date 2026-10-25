@@ -54,6 +54,45 @@ class AnalyticsIntegrationTests {
     boolean record(String id, String slug, String event) {
         return tx.execute(status -> service.record(id, slug, event, false).counted());
     }
+    @Test void cleanupIsBoundedAndResumesAfterBacklog() {
+        var jdbc = new org.springframework.jdbc.core.JdbcTemplate(context.getBean(javax.sql.DataSource.class));
+        var rows = new java.util.ArrayList<Object[]>();
+        for (int i = 0; i < 501; i++) rows.add(new Object[]{java.sql.Timestamp.from(clock.now.minus(Duration.ofDays(31))),
+            java.sql.Date.valueOf("2026-09-16"), "b".repeat(64), java.sql.Timestamp.from(clock.now.minus(Duration.ofDays(1)))});
+        jdbc.batchUpdate("INSERT INTO analytics_event(scope,occurred_at,visit_date,device_type,ip_token,ip_expires_at) VALUES ('visit',?,?,'PC',?,?)", rows);
+        var retention = new AnalyticsRetention(events, clock);
+        assertThat(tx.<Integer>execute(status -> retention.purge())).isEqualTo(500);
+        assertThat(tx.<Integer>execute(status -> retention.purge())).isEqualTo(1);
+        assertThat(events.countByScope("visit")).isEqualTo(501);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE device_type='PC' AND ip_token IS NULL", Long.class)).isEqualTo(501);
+    }
+    @Test void allEventMetadataAndRetentionPreserveCountsAndReceipts() {
+        var jdbc = new org.springframework.jdbc.core.JdbcTemplate(context.getBean(javax.sql.DataSource.class));
+        String browser = UUID.randomUUID().toString(), receipt = UUID.randomUUID().toString();
+        var metadata = new AnalyticsMetadata.Context(DeviceType.TABLET, "a".repeat(64));
+        tx.executeWithoutResult(status -> {
+            service.record(browser, null, receipt, false, metadata);
+            service.record(browser, "project-one", receipt, true, metadata);
+            service.record(browser, "project-one", receipt, false, metadata);
+            service.recordMarkdownDownload(browser, receipt, metadata);
+        });
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE device_type='TABLET' AND ip_token IS NOT NULL", Long.class)).isEqualTo(4);
+        assertThat(events.count()).isEqualTo(5); // Session derivative carries no network identifier.
+        var retention = new AnalyticsRetention(events, clock);
+        clock.now = clock.now.plus(Duration.ofDays(30)).minusNanos(1000);
+        assertThat(tx.<Integer>execute(status -> retention.purge())).isZero();
+        clock.now = clock.now.plusNanos(1000);
+        assertThat(tx.<Integer>execute(status -> retention.purge())).isEqualTo(4);
+        assertThat(tx.<Integer>execute(status -> retention.purge())).isZero();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE ip_token IS NOT NULL OR ip_expires_at IS NOT NULL", Long.class)).isZero();
+        assertThat(events.count()).isEqualTo(5);
+        assertThat(service.summary().totalVisits()).isEqualTo(1);
+        assertThat(service.summary().uniqueVisitors()).isEqualTo(1);
+        assertThat(tx.<Boolean>execute(status -> service.record(browser, null, receipt, false, metadata).counted())).isFalse();
+        assertThat(events.countByScope("project-one")).isEqualTo(1);
+        assertThat(events.countByScope("click:project-one")).isEqualTo(1);
+        assertThat(events.countByScope(AnalyticsService.MARKDOWN_DOWNLOAD)).isEqualTo(1);
+    }
     @Test void repeatVisitsAndClicksAreIndependentFromVisitorsAndSessions() {
         String id = UUID.randomUUID().toString();
         for (int i=0; i<3; i++) assertThat(record(id, null, UUID.randomUUID().toString())).isTrue();
@@ -125,7 +164,7 @@ class AnalyticsIntegrationTests {
         try (var c = java.sql.DriverManager.getConnection(url, "sa", ""); var sql = c.createStatement()) {
             sql.executeUpdate("INSERT INTO analytics_event(scope, occurred_at, visit_date) VALUES ('visit', CURRENT_TIMESTAMP, CURRENT_DATE), ('project-one', CURRENT_TIMESTAMP, CURRENT_DATE)");
             var upgrade = org.flywaydb.core.Flyway.configure().dataSource(url, "sa", "").load();
-            assertThat(upgrade.migrate().migrationsExecuted).isEqualTo(1);
+            assertThat(upgrade.migrate().migrationsExecuted).isEqualTo(2);
             assertThat(upgrade.migrate().migrationsExecuted).isZero();
             try (var rows = sql.executeQuery("SELECT scope, COUNT(*) FROM analytics_event GROUP BY scope")) {
                 var counts = new java.util.HashMap<String, Long>();

@@ -1,4 +1,7 @@
+import publicContact from './public-contact.json'
+
 export const profile = {
+  email: publicContact.email,
   name: 'sooyoung3322',
   title: 'Backend Developer',
   introduction: ['Java와 Spring Boot를 중심으로 웹 서비스를 개발합니다.', '이 저장소는 포트폴리오의 UI, API, 테스트를 확인하기 위한 공개용 소스 구성입니다.'],

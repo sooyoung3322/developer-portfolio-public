@@ -22,7 +22,7 @@ React/TypeScript 컴포넌트와 스타일, Spring Boot Controller/Service/Repos
 - npm ci: lockfile대로 설치.
 - npm run test:all: UI·Markdown·개인파일 차단·챗봇·네비게이션·통계·progress/motion 전부 통과.
 - npm run build:release: 콘텐츠 검사·TypeScript·Vite·빌드 전후 개인정보 파일 검사 통과.
-- Java 21 gradlew test build: 136개 테스트, 실패/오류/스킵 0, 전체 빌드 성공.
+- Java 21 gradlew test build: 142개 테스트, 실패/오류/스킵 0, 전체 빌드 성공.
 - 백엔드는 H2와 모의 HTTP/Provider만 사용했습니다. 실제 Gemini나 운영 DB에 연결하지 않았습니다.
 - 알려진 AWS/GitHub/Gemini 키, 실제 개인키 블록·JWT·인증 URL 및 운영 경로/저장소 식별 패턴 검사에서 차단 항목이 없었습니다.
 - 일반 비밀번호/키 대입 후보는 환경변수 참조와 합성 테스트 값으로 확인했고, 이메일 후보는 example 도메인의 합성 테스트뿐이었습니다.
@@ -30,3 +30,13 @@ React/TypeScript 컴포넌트와 스타일, Spring Boot Controller/Service/Repos
 - 배포물·node_modules·캐시·로컬 감사 결과는 Git에서 제외합니다. 초기 커밋에는 기존 .git 이력이나 운영 배포 workflow를 넣지 않습니다.
 
 전용 secret scanner·의존성 CVE 검사·실제 브라우저 검증 및 운영 사이트 가용성 검증을 수행했다는 의미는 아닙니다. 검출되지 않은 비밀정보가 절대 없다고 보장하지 않습니다. Public 전환과 재사용 라이선스 결정은 소유자의 별도 검토 사항입니다.
+
+## 2026-10-26 공개본 최신화 검증
+
+- 프론트엔드: `npm run test:all`, `npm run build:release` 통과. 이메일 복사 성공·실패·API 부재, 헤더·Contact 다운로드와 독립 이벤트, 합성 라우트 7개·404, 정적 파일 차단, 챗봇 상태·차단·오류 회귀 검증을 포함합니다.
+- 백엔드: JDK 21 `gradlew.bat test build --no-daemon` 통과. JUnit XML 합계 142개, 실패·오류·스킵 0. 기본 Java 8 환경의 초기 실행 실패는 JDK 21 선택으로 해결했습니다.
+- V4→V6 업그레이드에서 기존 이벤트·방문 세션과 V3 합성 지식 11개를 유지합니다. V6는 데이터 없는 열·인덱스 추가이며 운영 V7은 제외했습니다.
+- 기기 분류, 날짜별 HMAC 토큰·키 검증, 만료 토큰 정리의 배치 상한과 집계 보존, HTTP 기기 저장 및 기본 IP 비활성화, 합성 이메일 지식·다른 이메일 차단을 검증합니다.
+- 전체 공개 소스와 스테이징 파일을 패턴 검사하고 후보를 수동 검토합니다. 빈 환경변수 예시·합성 테스트 키·개인키 차단 마커만 허용합니다. 회사명·고객자료·운영 경로·인증키를 가져오지 않았습니다.
+- 배포 JAR와 일반 JAR에 공유 합성 이메일이 포함되고 실제 local/prod/production 설정이 없는지 확인했습니다. 빌드 산출물은 커밋하지 않습니다.
+- 실제 브라우저의 시각 배치와 OS 파일 저장 완료는 검증하지 않았습니다. 라우팅·이미지는 컴포넌트 렌더링과 로컬 SVG 참조·정적 빌드 검증으로 확인했습니다. 실제 MySQL·Gemini·AWS는 사용하지 않았습니다.

@@ -33,15 +33,23 @@ public class AnalyticsService {
     }
     @Transactional
     public Recorded record(String browserId, String slug, String eventId, boolean click) {
+        return record(browserId, slug, eventId, click, AnalyticsMetadata.Context.UNKNOWN);
+    }
+    @Transactional
+    public Recorded record(String browserId, String slug, String eventId, boolean click, AnalyticsMetadata.Context context) {
         if (slug != null && !SLUGS.contains(slug)) throw new ResponseStatusException(NOT_FOUND, "Unknown project");
         String scope = slug == null ? "visit" : click ? "click:" + slug : slug;
-        return recordScope(browserId, scope, eventId, slug == null);
+        return recordScope(browserId, scope, eventId, slug == null, context);
     }
     @Transactional
     public Recorded recordMarkdownDownload(String browserId, String eventId) {
-        return recordScope(browserId, MARKDOWN_DOWNLOAD, eventId, false);
+        return recordMarkdownDownload(browserId, eventId, AnalyticsMetadata.Context.UNKNOWN);
     }
-    private Recorded recordScope(String browserId, String scope, String eventId, boolean visit) {
+    @Transactional
+    public Recorded recordMarkdownDownload(String browserId, String eventId, AnalyticsMetadata.Context context) {
+        return recordScope(browserId, MARKDOWN_DOWNLOAD, eventId, false, context);
+    }
+    private Recorded recordScope(String browserId, String scope, String eventId, boolean visit, AnalyticsMetadata.Context context) {
         // A receipt identifies an interaction, never a user. Permanent receipts make retries
         // idempotent across instances; the existing atomic upsert serializes concurrent requests.
         String receiptScope = "event:" + scope;
@@ -60,7 +68,7 @@ public class AnalyticsService {
                 visitor.markRecordedAt(now);
             }
         }
-        events.save(new AnalyticsEvent(scope, now));
+        events.save(new AnalyticsEvent(scope, now, context));
         receipt.markRecordedAt(now);
         return new Recorded(true);
     }

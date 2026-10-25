@@ -57,7 +57,7 @@ class ChatIntegrationTests {
  void arbitraryQuestionsReachGeneratorWithFullPublicFacts(String question){
   var result=chat.ask(new Request(question,false),true);
   assertThat(result.code()).isEqualTo("SUCCESS");assertThat(result.answer()).isEqualTo(mock.answer);
-  assertThat(mock.questionReceived).isEqualTo(question);assertThat(mock.received).hasSize(11).allMatch(Knowledge::isPublished);
+  assertThat(mock.questionReceived).isEqualTo(question);assertThat(mock.received).hasSize(12).allMatch(Knowledge::isPublished);
   assertThat(result.projects()).extracting(ProjectLink::url).containsExactly(
    "/projects/project-one","/projects/project-two","/projects/project-three","/projects/project-four","/projects/project-five","/projects/project-six");
  }
@@ -71,8 +71,16 @@ class ChatIntegrationTests {
  @Test void unpublishedKnowledgeNeverReachesGenerator(){
   var jdbc=new org.springframework.jdbc.core.JdbcTemplate(context.getBean(javax.sql.DataSource.class));
   jdbc.update("insert into portfolio_knowledge(category,title,content,source_ref,published,created_at,updated_at) values (?,?,?,?,false,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)","private","Private","Private internal fact","private");
-  try {ask(false);assertThat(mock.received).hasSize(11).allMatch(Knowledge::isPublished);}
+  try {ask(false);assertThat(mock.received).hasSize(12).allMatch(Knowledge::isPublished);}
   finally {jdbc.update("delete from portfolio_knowledge where published=false");}
+ }
+ @Test void syntheticContactIsAvailableAndOtherAddressesStayBlocked(){
+  mock.answer="Demo contact: "+PublicContact.EMAIL;
+  var result=ask(false);
+  assertThat(result.code()).isEqualTo("SUCCESS");
+  assertThat(result.answer()).contains("demo@example.test");
+  assertThat(mock.received).anyMatch(k->k.getId()==-1L && k.getContent().contains(PublicContact.EMAIL));
+  assertThat(result.projects()).allMatch(link->link.url().matches("/projects/project-(one|two|three|four|five|six)"));
  }
  @Test void generatedSensitiveOrInternalOutputNeverReturnedOrStored(){
   mock.answer="person@example.org";var result=ask(true);

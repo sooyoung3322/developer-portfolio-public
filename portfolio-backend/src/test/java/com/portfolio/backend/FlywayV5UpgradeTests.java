@@ -17,10 +17,12 @@ class FlywayV5UpgradeTests {
   jdbc.update("INSERT INTO analytics_event(scope,occurred_at,visit_date) VALUES ('visit',CURRENT_TIMESTAMP,CURRENT_DATE),('visit',CURRENT_TIMESTAMP,CURRENT_DATE),('click:project-one',CURRENT_TIMESTAMP,CURRENT_DATE)");
   var original=jdbc.queryForList("SELECT id,scope,occurred_at,visit_date FROM analytics_event ORDER BY id");
   var flyway=Flyway.configure().dataSource(data).cleanDisabled(true).load();
-  assertThat(flyway.migrate().migrationsExecuted).isEqualTo(1);flyway.validate();
+  assertThat(flyway.migrate().migrationsExecuted).isEqualTo(2);flyway.validate();
   assertThat(jdbc.queryForList("SELECT id,scope,occurred_at,visit_date FROM analytics_event WHERE scope <> 'visit-session' ORDER BY id")).isEqualTo(original);
   assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE scope='visit-session'",Long.class)).isEqualTo(2);
   assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE scope='visit'",Long.class)).isEqualTo(2);
+  assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE device_type='UNKNOWN' AND ip_token IS NULL AND ip_expires_at IS NULL",Long.class)).isEqualTo(5);
+  assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM portfolio_knowledge",Long.class)).isEqualTo(11);
   assertThat(flyway.migrate().migrationsExecuted).isZero();
   assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event",Long.class)).isEqualTo(5);
  }

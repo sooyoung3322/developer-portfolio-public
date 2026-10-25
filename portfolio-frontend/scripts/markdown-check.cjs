@@ -2,11 +2,12 @@ const fs = require('node:fs')
 const path = require('node:path')
 const assert = require('node:assert/strict')
 const ts = require('typescript')
-require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, filename)
+require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText, filename)
 const { generatePortfolioMarkdown, downloadPortfolioMarkdown, portfolioFilename } = require('../src/portfolioMarkdown.ts')
 const { projects, projectRepositories } = require('../src/data/projects.ts')
 const { profile, experiences, skills } = require('../src/data/profile.ts')
 const markdown = generatePortfolioMarkdown()
+assert.ok(markdown.includes(`이메일: [${profile.email}](mailto:${profile.email})`))
 const withPrivateFields = structuredClone(projects)
 withPrivateFields[0].privateResume = 'PRIVATE_RESUME_CANARY'
 withPrivateFields[0].email = 'private-canary@example.test'
@@ -47,6 +48,24 @@ global.window = { setTimeout: (callback, delay) => { assert.ok(delay >= 0); call
     assert.equal(counted, 1)
     downloadPortfolioMarkdown(() => { counted++ })
     assert.equal(counted, 2)
+    // Exercise the actual shared button handler used by both placements.
+    const buttonExports = {}
+    let events = 0, menuClosed = 0
+    const buttonSource = fs.readFileSync(path.join(__dirname, '../src/components/MarkdownDownloadButton.tsx'), 'utf8')
+    require('node:vm').runInNewContext(ts.transpileModule(buttonSource, { compilerOptions: {
+      module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX,
+    } }).outputText, {
+      exports: buttonExports,
+      require: name => name === '../analytics' ? { trackMarkdownDownload: () => { events++ } }
+        : name === '../portfolioMarkdown' ? { downloadPortfolioMarkdown } : require(name),
+    })
+    const headerButton = buttonExports.MarkdownDownloadButton({ className: 'header-download', onDownloaded: () => { menuClosed++ } })
+    const contactButton = buttonExports.MarkdownDownloadButton({ className: 'contact-download' })
+    headerButton.props.onClick()
+    assert.equal(events, 1)
+    assert.equal(menuClosed, 1)
+    contactButton.props.onClick()
+    assert.equal(events, 2)
     downloadPortfolioMarkdown(() => { throw new Error('analytics unavailable') })
     const click = anchor.click
     anchor.click = () => { throw new Error('download initiation failed') }

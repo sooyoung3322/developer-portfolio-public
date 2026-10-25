@@ -44,6 +44,15 @@ tasks.test {
     useJUnitPlatform()
 }
 
+// Shared synthetic contact used by UI, Markdown and mock chatbot evidence.
+tasks.processResources {
+    from("../portfolio-frontend/src/data/public-contact.json")
+}
+
+tasks.jar {
+    exclude("application-local.yml", "application-local.yaml", "application-local.properties")
+}
+
 // Tests must see the same committed configuration on developer machines and CI.
 // Keep processResources/bootRun unchanged; only replace main resources on test
 // runtime classpaths, including the dedicated MySQL integration tasks below.

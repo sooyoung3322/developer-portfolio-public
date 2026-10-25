@@ -1,12 +1,13 @@
 # Source edition file inventory
 
-Only the following source/config/test files are selected for the initial commit. Dependencies, caches, compiler metadata and build outputs are excluded.
+Tracked source, configuration, documentation and tests after the public refresh. Dependencies, caches, compiler metadata and build outputs are excluded.
 
 - `.github/workflows/ci.yml`
 - `.gitignore`
 - `README.md`
 - `docs/FILES.md`
 - `docs/PUBLIC-EDITION.md`
+- `docs/SYNC-REPORT.md`
 - `docs/VERIFICATION.md`
 - `portfolio-backend/.env.example`
 - `portfolio-backend/build.gradle.kts`
@@ -21,10 +22,13 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsGuard.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsGuardId.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsGuardRepository.java`
+- `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsMetadata.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsRateFilter.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsReadController.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsRepository.java`
+- `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsRetention.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/analytics/AnalyticsService.java`
+- `portfolio-backend/src/main/java/com/portfolio/backend/analytics/DeviceType.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/ApiUsage.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/ApiUsageRepository.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/ChatAdminController.java`
@@ -50,6 +54,7 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/KnowledgeRepository.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/KnowledgeService.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/PrivacyGuard.java`
+- `portfolio-backend/src/main/java/com/portfolio/backend/chat/PublicContact.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/chat/UsageService.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/config/SecurityConfig.java`
 - `portfolio-backend/src/main/java/com/portfolio/backend/health/HealthController.java`
@@ -60,11 +65,13 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-backend/src/main/resources/db/migration/V3__public_portfolio_knowledge.sql`
 - `portfolio-backend/src/main/resources/db/migration/V4__chat_guard_reason.sql`
 - `portfolio-backend/src/main/resources/db/migration/V5__analytics_session_baseline.sql`
+- `portfolio-backend/src/main/resources/db/migration/V6__analytics_metadata.sql`
 - `portfolio-backend/src/test/java/com/portfolio/backend/FlywayV5UpgradeTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/PortfolioBackendApplicationTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/ProductionProfileTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/TestConfigurationIsolationTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/analytics/AnalyticsIntegrationTests.java`
+- `portfolio-backend/src/test/java/com/portfolio/backend/analytics/AnalyticsMetadataTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/analytics/AnalyticsRateFilterTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/chat/ChatEnvironmentTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/chat/ChatGenerationTests.java`
@@ -75,6 +82,7 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-backend/src/test/java/com/portfolio/backend/chat/ChatSettingsTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/chat/ChatTestSettings.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/chat/GeminiProviderTests.java`
+- `portfolio-backend/src/test/java/com/portfolio/backend/chat/PublicContactTests.java`
 - `portfolio-backend/src/test/java/com/portfolio/backend/chat/UsageLimitTests.java`
 - `portfolio-backend/src/test/resources/application-prod.yml`
 - `portfolio-backend/src/test/resources/application-production.yml`
@@ -90,6 +98,7 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-frontend/scripts/analytics-check.cjs`
 - `portfolio-frontend/scripts/chat-check.cjs`
 - `portfolio-frontend/scripts/check-public-assets.cjs`
+- `portfolio-frontend/scripts/contact-check.cjs`
 - `portfolio-frontend/scripts/content-check.mjs`
 - `portfolio-frontend/scripts/markdown-check.cjs`
 - `portfolio-frontend/scripts/navigation-check.cjs`
@@ -101,8 +110,10 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-frontend/src/analytics.tsx`
 - `portfolio-frontend/src/components/BackToTop.tsx`
 - `portfolio-frontend/src/components/ChatAccess.tsx`
+- `portfolio-frontend/src/components/ContactEmail.tsx`
 - `portfolio-frontend/src/components/ContentReview.tsx`
 - `portfolio-frontend/src/components/GitHubLink.tsx`
+- `portfolio-frontend/src/components/MarkdownDownloadButton.tsx`
 - `portfolio-frontend/src/components/PortfolioChat.tsx`
 - `portfolio-frontend/src/components/ProjectProgress.tsx`
 - `portfolio-frontend/src/components/ScrollMotion.tsx`
@@ -116,6 +127,7 @@ Only the following source/config/test files are selected for the initial commit.
 - `portfolio-frontend/src/data/content-review.json`
 - `portfolio-frontend/src/data/profile.ts`
 - `portfolio-frontend/src/data/projects.ts`
+- `portfolio-frontend/src/data/public-contact.json`
 - `portfolio-frontend/src/data/siteTechnology.ts`
 - `portfolio-frontend/src/main.tsx`
 - `portfolio-frontend/src/portfolioMarkdown.ts`

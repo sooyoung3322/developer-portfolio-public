@@ -11,4 +11,11 @@ public class Knowledge {
  private boolean published;
  private Instant createdAt, updatedAt;
  protected Knowledge() {}
+ static Knowledge publicContact() {
+  var fact = new Knowledge();
+  fact.id = -1L; fact.category = "contact"; fact.title = "공개 연락처";
+  fact.content = "공개 소스 합성 이메일 (실제 연락 불가): " + PublicContact.EMAIL;
+  fact.published = true; fact.sourceRef = "public-contact.json";
+  return fact;
+ }
 }

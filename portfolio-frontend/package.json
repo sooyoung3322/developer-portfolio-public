@@ -16,7 +16,8 @@
     "test:markdown": "node scripts/markdown-check.cjs",
     "test:privacy": "node scripts/private-assets-check.cjs",
     "test:chat": "node scripts/chat-check.cjs",
-    "test:all": "npm run test:privacy && npm run test:ui && npm run test:markdown && npm run test:chat && npm run test:navigation && node scripts/analytics-check.cjs && node scripts/project-progress-check.cjs && node scripts/scroll-motion-check.cjs"
+    "test:all": "npm run test:privacy && npm run test:ui && npm run test:contact && npm run test:markdown && npm run test:chat && npm run test:navigation && node scripts/analytics-check.cjs && node scripts/project-progress-check.cjs && node scripts/scroll-motion-check.cjs",
+    "test:contact": "node scripts/contact-check.cjs"
   },
   "dependencies": {
     "react": "^19.0.0",

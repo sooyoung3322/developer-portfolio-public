@@ -38,7 +38,7 @@ export function generatePortfolioMarkdown(projectList: readonly Project[] = proj
     if (project.repository?.public) section('#### 공개 GitHub', [link(project.repository.kind === 'case-study' ? 'GitHub 기술 사례 문서' : 'GitHub 저장소', project.repository.url)])
   }
   section('## AI 활용 경험', skills.filter(group => group.eyebrow === 'AI & AX DEVELOPMENT').map(group => bullets(group.items)))
-  section('## 연락처', [link('GitHub — ' + profile.name, profile.github)])
+  section('## 연락처', [`이메일: [${profile.email}](mailto:${profile.email})`, link('GitHub — ' + profile.name, profile.github)])
   return lines.join('\n').trimEnd() + '\n'
 }
 

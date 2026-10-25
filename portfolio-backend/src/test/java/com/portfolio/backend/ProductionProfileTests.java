@@ -31,7 +31,7 @@ class ProductionProfileTests {
             assertThat(pool.getMaximumPoolSize()).isEqualTo(4);
             assertThat(context.getEnvironment().getProperty("spring.jpa.hibernate.ddl-auto")).isEqualTo("validate");
             assertThat(context.getEnvironment().getProperty("server.address")).isEqualTo("127.0.0.1");
-            assertThat(context.getBean(org.flywaydb.core.Flyway.class).info().applied()).hasSize(5);
+            assertThat(context.getBean(org.flywaydb.core.Flyway.class).info().applied()).hasSize(6);
             var base = "http://127.0.0.1:" + context.getWebServer().getPort();
             var client = HttpClient.newHttpClient();
             var health = client.send(HttpRequest.newBuilder(URI.create(base + "/api/health")).build(), HttpResponse.BodyHandlers.ofString());
@@ -41,9 +41,13 @@ class ProductionProfileTests {
                 assertThat(denied.statusCode()).isIn(401, 403);
             }
             var event = client.send(HttpRequest.newBuilder(URI.create(base + "/api/analytics/visits"))
-                    .header("Origin", "https://portfolio.example.com").header("Content-Type", "application/json")
+                    .header("Origin", "https://portfolio.example.com").header("Content-Type", "application/json").header("User-Agent", "iPad Mobile Safari")
                     .POST(HttpRequest.BodyPublishers.ofString("{\"browserId\":\"34514ab8-812f-48af-8f17-109a151803ea\",\"eventId\":\"adf14ab8-812f-48af-8f17-109a151803ea\"}")).build(), HttpResponse.BodyHandlers.ofString());
             assertThat(event.statusCode()).isBetween(200, 299);
+            var jdbc = new org.springframework.jdbc.core.JdbcTemplate(pool);
+            assertThat(jdbc.queryForObject("SELECT device_type FROM analytics_event WHERE scope='visit'", String.class)).isEqualTo("TABLET");
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM analytics_event WHERE ip_token IS NOT NULL", Long.class)).isZero();
+            assertThat(event.body()).doesNotContain("TABLET", "ip_token");
         }
     }
 }
